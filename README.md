@@ -1,80 +1,47 @@
-# Asphyxia Docker Image #
-[Asphyxia](https://asphyxia-core.github.io/)
+## Usage
 
-Latest is running 1.50 of [Asphyxia](https://asphyxia-core.github.io/) and 0.5 of the [Official Plugins](https://github.com/asphyxia-core/plugins)
-
-## Source ##
-[github](https://github.com/edgar131/docker-asphyxia)
-
-## Usage ##
-```
-$ docker compose up
-```
-Or to run detached:
-```
-$ docker compose up -d
+```sh
+docker compose up -d
 ```
 
-## Environment Variables ##
-The following variables are passed as arguments to Asphyxia and will override any config.ini settings
+## Arguments
+You can pass arguments directly to Asphyxia by appending them to the `command` in your `compose.yml`:
 
-- **ASPHYXIA_LISTENING_PORT** - Override the listening port at runtime ("-p")
-- **ASPHYXIA_BINDING_HOST** - Override binding host at runtime ("-b")
-- **ASPHYXIA_MATCHING_PORT** - Override matching port at runtime ("-m")
-- **ASPHYXIA_DEV_MODE** - Enable dev mode (buggy?) ("--dev")
-- **ASPHYXIA_PING_IP** - Override ping IP address at runtime ("-pa")
-- **ASPHYXIA_SAVEDATA_DIR** - Override savedata directory at runtime ("-d")
+```yaml
+command: /app/bootstrap.sh --dev --ping-addr 127.0.0.1
+```
+
+## Environment Variables
+
 - **ASPHYXIA_PLUGIN_REPLACE** - Setting this will cause it to ONLY use the custom plugins provided from the mounted plugins directory.
 
-## Mount Point ##
-The local mount point for overrides within the container is /usr/local/share/custom.  If you wish to store additional plugins, config and savedata outside the container you should specify a volume such as:
-```
+## Mount Point
+
+The local mount point for overrides within the container is /app/custom. If you wish to store additional plugins, config and savedata outside the container you should specify a volume such as:
+
+```yaml
 volumes:
-      - "./asphyxia:/usr/local/share/custom"
+  - "./data/custom:/app/custom"
 ```
 
-You can replace "./asphyxia" with any directory on your machine that contains your config.ini/plugins/savedata directories.
+You can replace "./data/custom" with any directory on your machine that contains your config.ini/plugins/savedata directories.
 
 ## Config Override ##
-Place an Asphyxia config.ini file in the directory you have mounted to /usr/local/share/custom
+Place an Asphyxia config.ini file in the directory you have mounted to /app/custom
 
 ## Plugin Override ##
-Place a plugins directory in the directory you have mounted to /usr/local/share/custom. By default, the image contains the 0.5 release version of the [official plugins](https://github.com/asphyxia-core/plugins).  Any plugins that get mounted into /usr/local/share/custom will be copied (and override) the community plugins within the image.  If ASPHYXIA_PLUGIN_REPLACE is defined, then the community plugins will not be included, and it will rely on the plugins provided in custom.
+Place a plugins directory in the directory you have mounted to /app/custom. By default, the image contains the 0.5 release version of the [official plugins](https://github.com/asphyxia-core/plugins). Any plugins that get mounted into /app/custom will be copied (and override) the community plugins within the image. If ASPHYXIA_PLUGIN_REPLACE is defined, then the community plugins will not be included, and it will rely on the plugins provided in custom.
 
-## Savedata Override ##
-Place your savedata directory in the directory you have mounted to /usr/local/share/custom
+## Savedata ##
+By default, game data is stored in `./data` on your host.
 
 ## Notes ##
-Always ensure you open up both the listening port and the matching port (if you intend to do any matching) or you will not be able to access the web GUI or utilize Asphyxia in general.
+Always ensure you map both the listening port (8083) and the matching port (5700) in your compose file.
 Example:
 ```
 ports:
-      - "8083:8083"
-      - "5700:5700"
+  - "8083:8083"
+  - "5700:5700"
 ```
 
-While the default configuration that Asphyxia generates specifies the binding host as "localhost", I have found that in docker it typically doesn't work unless specified as "**0.0.0.0**".  If you aren't able to access the web GUI after running the container, you should either specify the **ASPHYXIA_BINDING_HOST** environment variable as "**0.0.0.0**" or change the binding host in your custom mounted config.ini as "**0.0.0.0**".
-
-## Sample docker-compose.yml ##
-[docker-compose.yml](https://github.com/edgar131/docker-asphyxia/blob/master/docker-compose.yml)
-```
-version: "3.9"
-
-services:
-  asphyxia:
-    image: edgar131/asphyxia:latest
-    build: .
-    environment:
-      - ASPHYXIA_LISTENING_PORT=
-      - ASPHYXIA_BINDING_HOST=0.0.0.0
-      - ASPHYXIA_MATCHING_PORT=
-      - ASPHYXIA_DEV_MODE=
-      - ASPHYXIA_PING_IP=
-      - ASPHYXIA_SAVEDATA_DIR=
-      - ASPHYXIA_PLUGIN_REPLACE=
-    ports:
-      - "8083:8083"
-      - "5700:5700"
-    volumes:
-      - "./asphyxia:/usr/local/share/custom"
-```
+The container is configured to automatically bind to "**0.0.0.0**" to ensure it's accessible from the host.
