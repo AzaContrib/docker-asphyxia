@@ -1,10 +1,10 @@
 FROM alpine:latest
-ENV ASPHYXIA_VERSION=1.50d
+ENV ASPHYXIA_VERSION=1.60b
 ENV ASPHYXIA_PLUGIN_VERSION=0.5
 
 WORKDIR /app
 RUN apk add gcompat libgcc libstdc++ &&\
-    wget https://github.com/asphyxia-core/asphyxia-core.github.io/releases/download/v${ASPHYXIA_VERSION}/asphyxia-core-linux-x64.zip &&\
+    wget https://github.com/asphyxia-core/core/releases/download/v${ASPHYXIA_VERSION}/asphyxia-core-linux-x64.zip &&\
     wget https://github.com/asphyxia-core/plugins/archive/refs/tags/${ASPHYXIA_PLUGIN_VERSION}.zip &&\
     mkdir -p ./asphyxia &&\
     unzip asphyxia-core-linux-x64.zip -d ./asphyxia &&\
