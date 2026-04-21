@@ -1,13 +1,9 @@
 services:
   asphyxia:
-    image: edgar131/asphyxia:latest
-    # build: .
-    working_dir: /app
-    command: /app/bootstrap.sh
+    build: .
     ports:
       - "8083:8083"
       - "5700:5700"
     volumes:
-      - "./bootstrap.sh:/app/bootstrap.sh"
       - "./data/custom:/app/custom"
       - "./data/savedata:/app/asphyxia/savedata"
